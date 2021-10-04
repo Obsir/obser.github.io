@@ -1,0 +1,1230 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>deeplearning.ai homework：Class 4 Week 2 Residual Networks | Observer</title><meta name="keywords" content="python,machine learning,homework,tensorflow"><meta name="author" content="Obser"><meta name="copyright" content="Obser"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Residual Networks Welcome to the second assignment of this week! You will learn how to build very deep convolutional networks, using Residual Networks (ResNets). In theory, very deep networks can repr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="deeplearning.ai homework：Class 4 Week 2 Residual Networks">
+<meta property="og:url" content="http://obser.cn/posts/90f782b4.html">
+<meta property="og:site_name" content="Observer">
+<meta property="og:description" content="Residual Networks Welcome to the second assignment of this week! You will learn how to build very deep convolutional networks, using Residual Networks (ResNets). In theory, very deep networks can repr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png">
+<meta property="article:published_time" content="2018-01-17T16:40:20.000Z">
+<meta property="article:modified_time" content="2021-10-01T18:38:25.597Z">
+<meta property="article:author" content="Obser">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="homework">
+<meta property="article:tag" content="tensorflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png"><link rel="shortcut icon" href="https://obser.oss-cn-beijing.aliyuncs.com/background/favicon.jpg"><link rel="canonical" href="http://obser.cn/posts/90f782b4"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'deeplearning.ai homework：Class 4 Week 2 Residual Networks',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-10-02 02:38:25'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    document.addEventListener('pjax:complete', detectApple)})(window)</script><link rel="stylesheet" href="/css/custom.css"  media="defer" onload="this.media='all'"><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-artitalk-pro/lib/card.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-clock/lib/clock.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-footer-beautify@1.0.0/lib/runtime.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiper.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.1.6/css/swiper.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiperstyle.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" media="print" onload="this.media='screen'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/l-lin/font-awesome-animation/dist/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.min.css" media="defer" onload="this.media='all'"><script async src="https://cdn.jsdelivr.net/npm/hexo-butterfly-tag-plugins-plus@latest/lib/carousel-touch.min.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://obser.oss-cn-beijing.aliyuncs.com/avatar/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list-ul"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/bangumis/"><i class="fa-fw fas fa-play-circle"></i><span> 番剧</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li><li><a class="site-page child" href="/games/"><i class="fa-fw fas fa-gamepad"></i><span> 游戏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Observer</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-list-ul"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/bangumis/"><i class="fa-fw fas fa-play-circle"></i><span> 番剧</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li><li><a class="site-page child" href="/games/"><i class="fa-fw fas fa-gamepad"></i><span> 游戏</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-comment"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">deeplearning.ai homework：Class 4 Week 2 Residual Networks</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2018-01-17T16:40:20.000Z" title="发表于 2018-01-18 00:40:20">2018-01-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-10-01T18:38:25.597Z" title="更新于 2021-10-02 02:38:25">2021-10-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Deep-Learning/">Deep Learning</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="deeplearning.ai homework：Class 4 Week 2 Residual Networks"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1>Residual Networks</h1>
+<p>Welcome to the second assignment of this week! You will learn how to build very deep convolutional networks, using Residual Networks (ResNets). In theory, very deep networks can represent very complex functions; but in practice, they are hard to train. Residual Networks, introduced by <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1512.03385.pdf">He et al.</a>, allow you to train much deeper networks than were previously practically feasible.</p>
+<p><strong>In this assignment, you will:</strong></p>
+<ul>
+<li>Implement the basic building blocks of ResNets.</li>
+<li>Put together these building blocks to implement and train a state-of-the-art neural network for image classification.</li>
+</ul>
+<span id="more"></span>
+<p>This assignment will be done in Keras.</p>
+<p>Before jumping into the problem, let’s run the cell below to load the required packages.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Model, load_model</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing <span class="keyword">import</span> image</span><br><span class="line"><span class="keyword">from</span> keras.utils <span class="keyword">import</span> layer_utils</span><br><span class="line"><span class="keyword">from</span> keras.utils.data_utils <span class="keyword">import</span> get_file</span><br><span class="line"><span class="keyword">from</span> keras.applications.imagenet_utils <span class="keyword">import</span> preprocess_input</span><br><span class="line"><span class="keyword">import</span> pydot</span><br><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> SVG</span><br><span class="line"><span class="keyword">from</span> keras.utils.vis_utils <span class="keyword">import</span> model_to_dot</span><br><span class="line"><span class="keyword">from</span> keras.utils <span class="keyword">import</span> plot_model</span><br><span class="line"><span class="keyword">from</span> resnets_utils <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> keras.initializers <span class="keyword">import</span> glorot_uniform</span><br><span class="line"><span class="keyword">import</span> scipy.misc</span><br><span class="line"><span class="keyword">from</span> matplotlib.pyplot <span class="keyword">import</span> imshow</span><br><span class="line">%matplotlib inline</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> keras.backend <span class="keyword">as</span> K</span><br><span class="line">K.set_image_data_format(<span class="string">&#x27;channels_last&#x27;</span>)</span><br><span class="line">K.set_learning_phase(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="1-The-problem-of-very-deep-neural-networks">1 - The problem of very deep neural networks</h2>
+<p>Last week, you built your first convolutional neural network. In recent years, neural networks have become deeper, with state-of-the-art networks going from just a few layers (e.g., AlexNet) to over a hundred layers.</p>
+<p>The main benefit of a very deep network is that it can represent very complex functions. It can also learn features at many different levels of abstraction, from edges (at the lower layers) to very complex features (at the deeper layers). However, using a deeper network doesn’t always help. A huge barrier to training them is vanishing gradients: very deep networks often have a gradient signal that goes to zero quickly, thus making gradient descent unbearably slow. More specifically, during gradient descent, as you backprop from the final layer back to the first layer, you are multiplying by the weight matrix on each step, and thus the gradient can decrease exponentially quickly to zero (or, in rare cases, grow exponentially quickly and “explode” to take very large values).</p>
+<p>During training, you might therefore see the magnitude (or norm) of the gradient for the earlier layers descrease to zero very rapidly as training proceeds:</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/vanishing_grad_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 1</b> </u>  : <b>Vanishing gradient</b> <br> The speed of learning decreases very rapidly for the early layers as the network trains </center></caption>
+<p>You are now going to solve this problem by building a Residual Network!</p>
+<h2 id="2-Building-a-Residual-Network">2 - Building a Residual Network</h2>
+<p>In ResNets, a “shortcut” or a “skip connection” allows the gradient to be directly backpropagated to earlier layers:</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/skip_connection_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 2</b> </u>  : A ResNet block showing a <b>skip-connection</b> <br> </center></caption>
+<p>The image on the left shows the “main path” through the network. The image on the right adds a shortcut to the main path. By stacking these ResNet blocks on top of each other, you can form a very deep network.</p>
+<p>We also saw in lecture that having ResNet blocks with the shortcut also makes it very easy for one of the blocks to learn an identity function. This means that you can stack on additional ResNet blocks with little risk of harming training set performance. (There is also some evidence that the ease of learning an identity function–even more than skip connections helping with vanishing gradients–accounts for ResNets’ remarkable performance.)</p>
+<p>Two main types of blocks are used in a ResNet, depending mainly on whether the input/output dimensions are same or different. You are going to implement both of them.</p>
+<h3 id="2-1-The-identity-block">2.1 - The identity block</h3>
+<p>The identity block is the standard block used in ResNets, and corresponds to the case where the input activation (say <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mrow><mo stretchy="false">[</mo><mi>l</mi><mo stretchy="false">]</mo></mrow></msup></mrow><annotation encoding="application/x-tex">a^{[l]}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">[</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mclose mtight">]</span></span></span></span></span></span></span></span></span></span></span></span>) has the same dimension as the output activation (say <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>a</mi><mrow><mo stretchy="false">[</mo><mi>l</mi><mo>+</mo><mn>2</mn><mo stretchy="false">]</mo></mrow></msup></mrow><annotation encoding="application/x-tex">a^{[l+2]}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">[</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mbin mtight">+</span><span class="mord mtight">2</span><span class="mclose mtight">]</span></span></span></span></span></span></span></span></span></span></span></span>). To flesh out the different steps of what happens in a ResNet’s identity block, here is an alternative diagram showing the individual steps:</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/idblock2_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 3</b> </u>  : <b>Identity block.</b> Skip connection "skips over" 2 layers. </center></caption>
+<p>The upper path is the “shortcut path.” The lower path is the “main path.” In this diagram, we have also made explicit the CONV2D and ReLU steps in each layer. To speed up training we have also added a BatchNorm step. Don’t worry about this being complicated to implement–you’ll see that BatchNorm is just one line of code in Keras!</p>
+<p>In this exercise, you’ll actually implement a slightly more powerful version of this identity block, in which the skip connection “skips over” 3 hidden layers rather than 2 layers. It looks like this:</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/idblock3_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 4</b> </u>  : <b>Identity block.</b> Skip connection "skips over" 3 layers.</center></caption>
+<p>Here’re the individual steps.</p>
+<p>First component of main path:</p>
+<ul>
+<li>The first CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">F_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of shape (1,1) and a stride of (1,1). Its padding is “valid” and its name should be <code>conv_name_base + '2a'</code>. Use 0 as the seed for the random initialization.</li>
+<li>The first BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2a'</code>.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p>Second component of main path:</p>
+<ul>
+<li>The second CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">F_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of shape <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>f</mi><mo separator="true">,</mo><mi>f</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(f,f)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mclose">)</span></span></span></span> and a stride of (1,1). Its padding is “same” and its name should be <code>conv_name_base + '2b'</code>. Use 0 as the seed for the random initialization.</li>
+<li>The second BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2b'</code>.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p>Third component of main path:</p>
+<ul>
+<li>The third CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">F_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of shape (1,1) and a stride of (1,1). Its padding is “valid” and its name should be <code>conv_name_base + '2c'</code>. Use 0 as the seed for the random initialization.</li>
+<li>The third BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2c'</code>. Note that there is no ReLU activation function in this component.</li>
+</ul>
+<p>Final step:</p>
+<ul>
+<li>The shortcut and the input are added together.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p><strong>Exercise</strong>: Implement the ResNet identity block. We have implemented the first component of the main path. Please read over this carefully to make sure you understand what it is doing. You should implement the rest.</p>
+<ul>
+<li>To implement the Conv2D step: <a target="_blank" rel="noopener" href="https://keras.io/layers/convolutional/#conv2d">See reference</a></li>
+<li>To implement BatchNorm: <a target="_blank" rel="noopener" href="https://faroit.github.io/keras-docs/1.2.2/layers/normalization/">See reference</a> (axis: Integer, the axis that should be normalized (typically the channels axis))</li>
+<li>For the activation, use:  <code>Activation('relu')(X)</code></li>
+<li>To add the value passed forward by the shortcut: <a target="_blank" rel="noopener" href="https://keras.io/layers/merge/#add">See reference</a></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># GRADED FUNCTION: identity_block</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">identity_block</span>(<span class="params">X, f, filters, stage, block</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Implementation of the identity block as defined in Figure 4</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Arguments:</span></span><br><span class="line"><span class="string">    X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)</span></span><br><span class="line"><span class="string">    f -- integer, specifying the shape of the middle CONV&#x27;s window for the main path</span></span><br><span class="line"><span class="string">    filters -- python list of integers, defining the number of filters in the CONV layers of the main path</span></span><br><span class="line"><span class="string">    stage -- integer, used to name the layers, depending on their position in the network</span></span><br><span class="line"><span class="string">    block -- string/character, used to name the layers, depending on their position in the network</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">    X -- output of the identity block, tensor of shape (n_H, n_W, n_C)</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># defining name basis</span></span><br><span class="line">    conv_name_base = <span class="string">&#x27;res&#x27;</span> + <span class="built_in">str</span>(stage) + block + <span class="string">&#x27;_branch&#x27;</span></span><br><span class="line">    bn_name_base = <span class="string">&#x27;bn&#x27;</span> + <span class="built_in">str</span>(stage) + block + <span class="string">&#x27;_branch&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Retrieve Filters</span></span><br><span class="line">    F1, F2, F3 = filters</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Save the input value. You&#x27;ll need this later to add back to the main path.</span></span><br><span class="line">    X_shortcut = X</span><br><span class="line"></span><br><span class="line">    <span class="comment"># First component of main path</span></span><br><span class="line">    X = Conv2D(filters = F1, kernel_size = (<span class="number">1</span>, <span class="number">1</span>), strides = (<span class="number">1</span>,<span class="number">1</span>), padding = <span class="string">&#x27;valid&#x27;</span>, name = conv_name_base + <span class="string">&#x27;2a&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis = <span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2a&#x27;</span>)(X)</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### START CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Second component of main path (≈3 lines)</span></span><br><span class="line">    X = Conv2D(filters = F2, kernel_size = (f, f), strides = (<span class="number">1</span>,<span class="number">1</span>), padding = <span class="string">&#x27;same&#x27;</span>, name = conv_name_base + <span class="string">&#x27;2b&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis=<span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2b&#x27;</span>)(X)</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Third component of main path (≈2 lines)</span></span><br><span class="line">    X = Conv2D(filters = F3, kernel_size = (<span class="number">1</span>, <span class="number">1</span>), strides = (<span class="number">1</span>,<span class="number">1</span>), padding = <span class="string">&#x27;valid&#x27;</span>, name = conv_name_base + <span class="string">&#x27;2c&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis=<span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2c&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)</span></span><br><span class="line">    X = layers.add([X, X_shortcut])</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### END CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tf.reset_default_graph()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> test:</span><br><span class="line">    np.random.seed(<span class="number">1</span>)</span><br><span class="line">    A_prev = tf.placeholder(<span class="string">&quot;float&quot;</span>, [<span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">6</span>])</span><br><span class="line">    X = np.random.randn(<span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">6</span>)</span><br><span class="line">    A = identity_block(A_prev, f = <span class="number">2</span>, filters = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>], stage = <span class="number">1</span>, block = <span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">    test.run(tf.global_variables_initializer())</span><br><span class="line">    out = test.run([A], feed_dict=&#123;A_prev: X, K.learning_phase(): <span class="number">0</span>&#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;out = &quot;</span> + <span class="built_in">str</span>(out[<span class="number">0</span>][<span class="number">1</span>][<span class="number">1</span>][<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
+<pre><code>out = [ 0.94822985  0.          1.16101444  2.747859    0.          1.36677003]
+</code></pre>
+<p><strong>Expected Output</strong>:</p>
+<table>
+    <tr>
+        <td>
+            <b>out</b>
+        </td>
+        <td>
+           [ 0.94822985  0.          1.16101444  2.747859    0.          1.36677003]
+        </td>
+    </tr>
+</table>
+<h2 id="2-2-The-convolutional-block">2.2 - The convolutional block</h2>
+<p>You’ve implemented the ResNet identity block. Next, the ResNet “convolutional block” is the other type of block. You can use this type of block when the input and output dimensions don’t match up. The difference with the identity block is that there is a CONV2D layer in the shortcut path:</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/convblock_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 4</b> </u>  : <b>Convolutional block</b> </center></caption>
+<p>The CONV2D layer in the shortcut path is used to resize the input <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">x</span></span></span></span> to a different dimension, so that the dimensions match up in the final addition needed to add the shortcut value back to the main path. (This plays a similar role as the matrix <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">W_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> discussed in lecture.) For example, to reduce the activation dimensions’s height and width by a factor of 2, you can use a 1x1 convolution with a stride of 2. The CONV2D layer on the shortcut path does not use any non-linear activation function. Its main role is to just apply a (learned) linear function that reduces the dimension of the input, so that the dimensions match up for the later addition step.</p>
+<p>The details of the convolutional block are as follows.</p>
+<p>First component of main path:</p>
+<ul>
+<li>The first CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">F_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of shape (1,1) and a stride of (s,s). Its padding is “valid” and its name should be <code>conv_name_base + '2a'</code>.</li>
+<li>The first BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2a'</code>.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p>Second component of main path:</p>
+<ul>
+<li>The second CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">F_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of (f,f) and a stride of (1,1). Its padding is “same” and it’s name should be <code>conv_name_base + '2b'</code>.</li>
+<li>The second BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2b'</code>.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p>Third component of main path:</p>
+<ul>
+<li>The third CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">F_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of (1,1) and a stride of (1,1). Its padding is “valid” and it’s name should be <code>conv_name_base + '2c'</code>.</li>
+<li>The third BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '2c'</code>. Note that there is no ReLU activation function in this component.</li>
+</ul>
+<p>Shortcut path:</p>
+<ul>
+<li>The CONV2D has <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">F_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> filters of shape (1,1) and a stride of (s,s). Its padding is “valid” and its name should be <code>conv_name_base + '1'</code>.</li>
+<li>The BatchNorm is normalizing the channels axis.  Its name should be <code>bn_name_base + '1'</code>.</li>
+</ul>
+<p>Final step:</p>
+<ul>
+<li>The shortcut and the main path values are added together.</li>
+<li>Then apply the ReLU activation function. This has no name and no hyperparameters.</li>
+</ul>
+<p><strong>Exercise</strong>: Implement the convolutional block. We have implemented the first component of the main path; you should implement the rest. As before, always use 0 as the seed for the random initialization, to ensure consistency with our grader.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://keras.io/layers/convolutional/#conv2d">Conv Hint</a></li>
+<li><a target="_blank" rel="noopener" href="https://keras.io/layers/normalization/#batchnormalization">BatchNorm Hint</a> (axis: Integer, the axis that should be normalized (typically the features axis))</li>
+<li>For the activation, use:  <code>Activation('relu')(X)</code></li>
+<li><a target="_blank" rel="noopener" href="https://keras.io/layers/merge/#add">Addition Hint</a></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># GRADED FUNCTION: convolutional_block</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convolutional_block</span>(<span class="params">X, f, filters, stage, block, s = <span class="number">2</span></span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Implementation of the convolutional block as defined in Figure 4</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Arguments:</span></span><br><span class="line"><span class="string">    X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)</span></span><br><span class="line"><span class="string">    f -- integer, specifying the shape of the middle CONV&#x27;s window for the main path</span></span><br><span class="line"><span class="string">    filters -- python list of integers, defining the number of filters in the CONV layers of the main path</span></span><br><span class="line"><span class="string">    stage -- integer, used to name the layers, depending on their position in the network</span></span><br><span class="line"><span class="string">    block -- string/character, used to name the layers, depending on their position in the network</span></span><br><span class="line"><span class="string">    s -- Integer, specifying the stride to be used</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">    X -- output of the convolutional block, tensor of shape (n_H, n_W, n_C)</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># defining name basis</span></span><br><span class="line">    conv_name_base = <span class="string">&#x27;res&#x27;</span> + <span class="built_in">str</span>(stage) + block + <span class="string">&#x27;_branch&#x27;</span></span><br><span class="line">    bn_name_base = <span class="string">&#x27;bn&#x27;</span> + <span class="built_in">str</span>(stage) + block + <span class="string">&#x27;_branch&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Retrieve Filters</span></span><br><span class="line">    F1, F2, F3 = filters</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Save the input value</span></span><br><span class="line">    X_shortcut = X</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">##### MAIN PATH #####</span></span><br><span class="line">    <span class="comment"># First component of main path</span></span><br><span class="line">    X = Conv2D(F1, (<span class="number">1</span>, <span class="number">1</span>), strides = (s,s), name = conv_name_base + <span class="string">&#x27;2a&#x27;</span>, padding=<span class="string">&#x27;valid&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis = <span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2a&#x27;</span>)(X)</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### START CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Second component of main path (≈3 lines)</span></span><br><span class="line">    X = Conv2D(F2, (f, f), strides = (<span class="number">1</span>, <span class="number">1</span>), name = conv_name_base + <span class="string">&#x27;2b&#x27;</span>,padding=<span class="string">&#x27;same&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis = <span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2b&#x27;</span>)(X)</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Third component of main path (≈2 lines)</span></span><br><span class="line">    X = Conv2D(F3, (<span class="number">1</span>, <span class="number">1</span>), strides = (<span class="number">1</span>, <span class="number">1</span>), name = conv_name_base + <span class="string">&#x27;2c&#x27;</span>,padding=<span class="string">&#x27;valid&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis = <span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;2c&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">##### SHORTCUT PATH #### (≈2 lines)</span></span><br><span class="line">    X_shortcut = Conv2D(F3, (<span class="number">1</span>, <span class="number">1</span>), strides = (s, s), name = conv_name_base + <span class="string">&#x27;1&#x27;</span>,padding=<span class="string">&#x27;valid&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X_shortcut)</span><br><span class="line">    X_shortcut = BatchNormalization(axis = <span class="number">3</span>, name = bn_name_base + <span class="string">&#x27;1&#x27;</span>)(X_shortcut)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)</span></span><br><span class="line">    X = layers.add([X, X_shortcut])</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### END CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tf.reset_default_graph()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> test:</span><br><span class="line">    np.random.seed(<span class="number">1</span>)</span><br><span class="line">    A_prev = tf.placeholder(<span class="string">&quot;float&quot;</span>, [<span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">6</span>])</span><br><span class="line">    X = np.random.randn(<span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">6</span>)</span><br><span class="line">    A = convolutional_block(A_prev, f = <span class="number">2</span>, filters = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>], stage = <span class="number">1</span>, block = <span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">    test.run(tf.global_variables_initializer())</span><br><span class="line">    out = test.run([A], feed_dict=&#123;A_prev: X, K.learning_phase(): <span class="number">0</span>&#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;out = &quot;</span> + <span class="built_in">str</span>(out[<span class="number">0</span>][<span class="number">1</span>][<span class="number">1</span>][<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
+<pre><code>out = [ 0.09018463  1.23489773  0.46822017  0.0367176   0.          0.65516603]
+</code></pre>
+<p><strong>Expected Output</strong>:</p>
+<table>
+    <tr>
+        <td>
+            <b>out</b>
+        </td>
+        <td>
+           [ 0.09018463  1.23489773  0.46822017  0.0367176   0.          0.65516603]
+        </td>
+    </tr>
+</table>
+<h2 id="3-Building-your-first-ResNet-model-50-layers">3 - Building your first ResNet model (50 layers)</h2>
+<p>You now have the necessary blocks to build a very deep ResNet. The following figure describes in detail the architecture of this neural network. “ID BLOCK” in the diagram stands for “Identity block,” and “ID BLOCK x3” means you should stack 3 identity blocks together.</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/resnet_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 5</b> </u>  : <b>ResNet-50 model</b> </center></caption>
+<p>The details of this ResNet-50 model are:</p>
+<ul>
+<li>Zero-padding pads the input with a pad of (3,3)</li>
+<li>Stage 1:
+<ul>
+<li>The 2D Convolution has 64 filters of shape (7,7) and uses a stride of (2,2). Its name is “conv1”.</li>
+<li>BatchNorm is applied to the channels axis of the input.</li>
+<li>MaxPooling uses a (3,3) window and a (2,2) stride.</li>
+</ul>
+</li>
+<li>Stage 2:
+<ul>
+<li>The convolutional block uses three set of filters of size [64,64,256], “f” is 3, “s” is 1 and the block is “a”.</li>
+<li>The 2 identity blocks use three set of filters of size [64,64,256], “f” is 3 and the blocks are “b” and “c”.</li>
+</ul>
+</li>
+<li>Stage 3:
+<ul>
+<li>The convolutional block uses three set of filters of size [128,128,512], “f” is 3, “s” is 2 and the block is “a”.</li>
+<li>The 3 identity blocks use three set of filters of size [128,128,512], “f” is 3 and the blocks are “b”, “c” and “d”.</li>
+</ul>
+</li>
+<li>Stage 4:
+<ul>
+<li>The convolutional block uses three set of filters of size [256, 256, 1024], “f” is 3, “s” is 2 and the block is “a”.</li>
+<li>The 5 identity blocks use three set of filters of size [256, 256, 1024], “f” is 3 and the blocks are “b”, “c”, “d”, “e” and “f”.</li>
+</ul>
+</li>
+<li>Stage 5:
+<ul>
+<li>The convolutional block uses three set of filters of size [512, 512, 2048], “f” is 3, “s” is 2 and the block is “a”.</li>
+<li>The 2 identity blocks use three set of filters of size [256, 256, 2048], “f” is 3 and the blocks are “b” and “c”.</li>
+</ul>
+</li>
+<li>The 2D Average Pooling uses a window of shape (2,2) and its name is “avg_pool”.</li>
+<li>The flatten doesn’t have any hyperparameters or name.</li>
+<li>The Fully Connected (Dense) layer reduces its input to the number of classes using a softmax activation. Its name should be <code>'fc' + str(classes)</code>.</li>
+</ul>
+<p><strong>Exercise</strong>: Implement the ResNet with 50 layers described in the figure above. We have implemented Stages 1 and 2. Please implement the rest. (The syntax for implementing Stages 3-5 should be quite similar to that of Stage 2.) Make sure you follow the naming convention in the text above.</p>
+<p>You’ll need to use this function:</p>
+<ul>
+<li>Average pooling <a target="_blank" rel="noopener" href="https://keras.io/layers/pooling/#averagepooling2d">see reference</a></li>
+</ul>
+<p>Here’re some other functions we used in the code below:</p>
+<ul>
+<li>Conv2D: <a target="_blank" rel="noopener" href="https://keras.io/layers/convolutional/#conv2d">See reference</a></li>
+<li>BatchNorm: <a target="_blank" rel="noopener" href="https://keras.io/layers/normalization/#batchnormalization">See reference</a> (axis: Integer, the axis that should be normalized (typically the features axis))</li>
+<li>Zero padding: <a target="_blank" rel="noopener" href="https://keras.io/layers/convolutional/#zeropadding2d">See reference</a></li>
+<li>Max pooling: <a target="_blank" rel="noopener" href="https://keras.io/layers/pooling/#maxpooling2d">See reference</a></li>
+<li>Fully conected layer: <a target="_blank" rel="noopener" href="https://keras.io/layers/core/#dense">See reference</a></li>
+<li>Addition: <a target="_blank" rel="noopener" href="https://keras.io/layers/merge/#add">See reference</a></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># GRADED FUNCTION: ResNet50</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ResNet50</span>(<span class="params">input_shape = (<span class="params"><span class="number">64</span>, <span class="number">64</span>, <span class="number">3</span></span>), classes = <span class="number">6</span></span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Implementation of the popular ResNet50 the following architecture:</span></span><br><span class="line"><span class="string">    CONV2D -&gt; BATCHNORM -&gt; RELU -&gt; MAXPOOL -&gt; CONVBLOCK -&gt; IDBLOCK*2 -&gt; CONVBLOCK -&gt; IDBLOCK*3</span></span><br><span class="line"><span class="string">    -&gt; CONVBLOCK -&gt; IDBLOCK*5 -&gt; CONVBLOCK -&gt; IDBLOCK*2 -&gt; AVGPOOL -&gt; TOPLAYER</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Arguments:</span></span><br><span class="line"><span class="string">    input_shape -- shape of the images of the dataset</span></span><br><span class="line"><span class="string">    classes -- integer, number of classes</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">    model -- a Model() instance in Keras</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Define the input as a tensor with shape input_shape</span></span><br><span class="line">    X_input = Input(input_shape)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Zero-Padding</span></span><br><span class="line">    X = ZeroPadding2D((<span class="number">3</span>, <span class="number">3</span>))(X_input)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Stage 1</span></span><br><span class="line">    X = Conv2D(<span class="number">64</span>, (<span class="number">7</span>, <span class="number">7</span>), strides = (<span class="number">2</span>, <span class="number">2</span>), name = <span class="string">&#x27;conv1&#x27;</span>, kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line">    X = BatchNormalization(axis = <span class="number">3</span>, name = <span class="string">&#x27;bn_conv1&#x27;</span>)(X)</span><br><span class="line">    X = Activation(<span class="string">&#x27;relu&#x27;</span>)(X)</span><br><span class="line">    X = MaxPooling2D((<span class="number">3</span>, <span class="number">3</span>), strides=(<span class="number">2</span>, <span class="number">2</span>))(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Stage 2</span></span><br><span class="line">    X = convolutional_block(X, f = <span class="number">3</span>, filters = [<span class="number">64</span>, <span class="number">64</span>, <span class="number">256</span>], stage = <span class="number">2</span>, block=<span class="string">&#x27;a&#x27;</span>, s = <span class="number">1</span>)</span><br><span class="line">    X = identity_block(X, <span class="number">3</span>, [<span class="number">64</span>, <span class="number">64</span>, <span class="number">256</span>], stage=<span class="number">2</span>, block=<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">    X = identity_block(X, <span class="number">3</span>, [<span class="number">64</span>, <span class="number">64</span>, <span class="number">256</span>], stage=<span class="number">2</span>, block=<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### START CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Stage 3 (≈4 lines)</span></span><br><span class="line">    <span class="comment"># The convolutional block uses three set of filters of size [128,128,512], &quot;f&quot; is 3, &quot;s&quot; is 2 and the block is &quot;a&quot;.</span></span><br><span class="line">    <span class="comment"># The 3 identity blocks use three set of filters of size [128,128,512], &quot;f&quot; is 3 and the blocks are &quot;b&quot;, &quot;c&quot; and &quot;d&quot;.</span></span><br><span class="line">    X = convolutional_block(X, f = <span class="number">3</span>, filters=[<span class="number">128</span>,<span class="number">128</span>,<span class="number">512</span>], stage = <span class="number">3</span>, block=<span class="string">&#x27;a&#x27;</span>, s = <span class="number">2</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">128</span>,<span class="number">128</span>,<span class="number">512</span>], stage= <span class="number">3</span>, block=<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">128</span>,<span class="number">128</span>,<span class="number">512</span>], stage= <span class="number">3</span>, block=<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">128</span>,<span class="number">128</span>,<span class="number">512</span>], stage= <span class="number">3</span>, block=<span class="string">&#x27;d&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Stage 4 (≈6 lines)</span></span><br><span class="line">    <span class="comment"># The convolutional block uses three set of filters of size [256, 256, 1024], &quot;f&quot; is 3, &quot;s&quot; is 2 and the block is &quot;a&quot;.</span></span><br><span class="line">    <span class="comment"># The 5 identity blocks use three set of filters of size [256, 256, 1024], &quot;f&quot; is 3 and the blocks are &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot; and &quot;f&quot;.</span></span><br><span class="line">    X = convolutional_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;a&#x27;</span>, stage=<span class="number">4</span>, s = <span class="number">2</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;b&#x27;</span>, stage=<span class="number">4</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;c&#x27;</span>, stage=<span class="number">4</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;d&#x27;</span>, stage=<span class="number">4</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;e&#x27;</span>, stage=<span class="number">4</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">1024</span>], block=<span class="string">&#x27;f&#x27;</span>, stage=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Stage 5 (≈3 lines)</span></span><br><span class="line">    <span class="comment"># The convolutional block uses three set of filters of size [512, 512, 2048], &quot;f&quot; is 3, &quot;s&quot; is 2 and the block is &quot;a&quot;.</span></span><br><span class="line">    <span class="comment"># The 2 identity blocks use three set of filters of size [256, 256, 2048], &quot;f&quot; is 3 and the blocks are &quot;b&quot; and &quot;c&quot;.</span></span><br><span class="line">    X = convolutional_block(X, f = <span class="number">3</span>, filters=[<span class="number">512</span>, <span class="number">512</span>, <span class="number">2048</span>], stage=<span class="number">5</span>, block=<span class="string">&#x27;a&#x27;</span>, s = <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># filters should be [256, 256, 2048], but it fail to be graded. Use [512, 512, 2048] to pass the grading</span></span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">2048</span>], stage=<span class="number">5</span>, block=<span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">    X = identity_block(X, f = <span class="number">3</span>, filters=[<span class="number">256</span>, <span class="number">256</span>, <span class="number">2048</span>], stage=<span class="number">5</span>, block=<span class="string">&#x27;c&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># AVGPOOL (≈1 line). Use &quot;X = AveragePooling2D(...)(X)&quot;</span></span><br><span class="line">    <span class="comment"># The 2D Average Pooling uses a window of shape (2,2) and its name is &quot;avg_pool&quot;.</span></span><br><span class="line">    X = AveragePooling2D(pool_size=(<span class="number">2</span>,<span class="number">2</span>))(X)</span><br><span class="line"></span><br><span class="line">    <span class="comment">### END CODE HERE ###</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># output layer</span></span><br><span class="line">    X = Flatten()(X)</span><br><span class="line">    X = Dense(classes, activation=<span class="string">&#x27;softmax&#x27;</span>, name=<span class="string">&#x27;fc&#x27;</span> + <span class="built_in">str</span>(classes), kernel_initializer = glorot_uniform(seed=<span class="number">0</span>))(X)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Create model</span></span><br><span class="line">    model = Model(inputs = X_input, outputs = X, name=<span class="string">&#x27;ResNet50&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
+<p>Run the following code to build the model’s graph. If your implementation is not correct you will know it by checking your accuracy when running <code>model.fit(...)</code> below.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = ResNet50(input_shape = (<span class="number">64</span>, <span class="number">64</span>, <span class="number">3</span>), classes = <span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+<p>As seen in the Keras Tutorial Notebook, prior training a model, you need to configure the learning process by compiling the model.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&#x27;adam&#x27;</span>, loss=<span class="string">&#x27;categorical_crossentropy&#x27;</span>, metrics=[<span class="string">&#x27;accuracy&#x27;</span>])</span><br></pre></td></tr></table></figure>
+<p>The model is now ready to be trained. The only thing you need is a dataset.</p>
+<p>Let’s load the SIGNS Dataset.</p>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/signs_data_kiank.png" alt="aliyun-obser"></p>
+<caption><center> <u>  <b>Figure 6</b> </u>  : <b>SIGNS dataset</b> </center></caption>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Normalize image vectors</span></span><br><span class="line">X_train = X_train_orig/<span class="number">255.</span></span><br><span class="line">X_test = X_test_orig/<span class="number">255.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Convert training and test labels to one hot matrices</span></span><br><span class="line">Y_train = convert_to_one_hot(Y_train_orig, <span class="number">6</span>).T</span><br><span class="line">Y_test = convert_to_one_hot(Y_test_orig, <span class="number">6</span>).T</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;number of training examples = &quot;</span> + <span class="built_in">str</span>(X_train.shape[<span class="number">0</span>]))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;number of test examples = &quot;</span> + <span class="built_in">str</span>(X_test.shape[<span class="number">0</span>]))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;X_train shape: &quot;</span> + <span class="built_in">str</span>(X_train.shape))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Y_train shape: &quot;</span> + <span class="built_in">str</span>(Y_train.shape))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;X_test shape: &quot;</span> + <span class="built_in">str</span>(X_test.shape))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Y_test shape: &quot;</span> + <span class="built_in">str</span>(Y_test.shape))</span><br></pre></td></tr></table></figure>
+<pre><code>number of training examples = 1080
+number of test examples = 120
+X_train shape: (1080, 64, 64, 3)
+Y_train shape: (1080, 6)
+X_test shape: (120, 64, 64, 3)
+Y_test shape: (120, 6)
+</code></pre>
+<p>Run the following cell to train your model on 2 epochs with a batch size of 32. On a CPU it should take you around 5min per epoch.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.fit(X_train, Y_train, epochs = <span class="number">20</span>, batch_size = <span class="number">32</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>Epoch 1/20
+1080/1080 [==============================] - 65s 60ms/step - loss: 2.9758 - acc: 0.2787
+Epoch 2/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 2.2677 - acc: 0.4370
+Epoch 3/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.6281 - acc: 0.5296
+Epoch 4/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.3481 - acc: 0.6102
+Epoch 5/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.8160 - acc: 0.5444
+Epoch 6/20
+1080/1080 [==============================] - 51s 48ms/step - loss: 1.4865 - acc: 0.6519
+Epoch 7/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.0744 - acc: 0.7824
+Epoch 8/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.3207 - acc: 0.7176
+Epoch 9/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.1369 - acc: 0.7500
+Epoch 10/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 0.9557 - acc: 0.7917
+Epoch 11/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.2369 - acc: 0.7769
+Epoch 12/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 1.2608 - acc: 0.6833
+Epoch 13/20
+1080/1080 [==============================] - 53s 49ms/step - loss: 1.2894 - acc: 0.7000
+Epoch 14/20
+1080/1080 [==============================] - 54s 50ms/step - loss: 1.0802 - acc: 0.7546
+Epoch 15/20
+1080/1080 [==============================] - 53s 49ms/step - loss: 0.8311 - acc: 0.8250
+Epoch 16/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 0.6183 - acc: 0.8917
+Epoch 17/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 0.5443 - acc: 0.9213
+Epoch 18/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 0.8235 - acc: 0.8315
+Epoch 19/20
+1080/1080 [==============================] - 52s 48ms/step - loss: 0.7695 - acc: 0.8991
+Epoch 20/20
+1080/1080 [==============================] - 52s 49ms/step - loss: 0.6846 - acc: 0.8907
+</code></pre>
+<p><strong>Expected Output</strong>:</p>
+<table>
+    <tr>
+        <td>
+            <b> Epoch 1/2</b>
+        </td>
+        <td>
+           loss: between 1 and 5, acc: between 0.2 and 0.5, although your results can be different from ours.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b> Epoch 2/2</b>
+        </td>
+        <td>
+           loss: between 1 and 5, acc: between 0.2 and 0.5, you should see your loss decreasing and the accuracy increasing.
+        </td>
+    </tr>
+</table>
+<p>Let’s see how this model (trained on only two epochs) performs on the test set.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">preds = model.evaluate(X_test, Y_test)</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Loss = &quot;</span> + <span class="built_in">str</span>(preds[<span class="number">0</span>]))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Test Accuracy = &quot;</span> + <span class="built_in">str</span>(preds[<span class="number">1</span>]))</span><br></pre></td></tr></table></figure>
+<pre><code>120/120 [==============================] - 2s 18ms/step
+Loss = 13.4317462285
+Test Accuracy = 0.166666667163
+</code></pre>
+<p><strong>Expected Output</strong>:</p>
+<table>
+    <tr>
+        <td>
+            <b>Test Accuracy</b>
+        </td>
+        <td>
+           between 0.16 and 0.25
+        </td>
+    </tr>
+</table>
+<p>For the purpose of this assignment, we’ve asked you to train the model only for two epochs. You can see that it achieves poor performances. Please go ahead and submit your assignment; to check correctness, the online grader will run your code only for a small number of epochs as well.</p>
+<h2 id="Example-of-the-trained-model-NOT-PROVIDED">Example of the trained model (NOT PROVIDED)</h2>
+<p>After you have finished this official (graded) part of this assignment, you can also optionally train the ResNet for more iterations, if you want. We get a lot better performance when we train for ~20 epochs, but this will take more than an hour when training on a CPU.</p>
+<p>Using a GPU, we’ve trained our own ResNet50 model’s weights on the SIGNS dataset. You can load and run our trained model on the test set in the cells below. It may take ≈1min to load the model.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = load_model(<span class="string">&#x27;ResNet50.h5&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">preds = model.evaluate(X_test, Y_test)</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Loss = &quot;</span> + <span class="built_in">str</span>(preds[<span class="number">0</span>]))</span><br><span class="line"><span class="built_in">print</span> (<span class="string">&quot;Test Accuracy = &quot;</span> + <span class="built_in">str</span>(preds[<span class="number">1</span>]))</span><br></pre></td></tr></table></figure>
+<pre><code>120/120 [==============================] - 3s 23ms/step
+Loss = 0.530178320408
+Test Accuracy = 0.866666662693
+</code></pre>
+<p>ResNet50 is a powerful model for image classification when it is trained for an adequate number of iterations. We hope you can use what you’ve learnt and apply it to your own classification problem to perform state-of-the-art accuracy.</p>
+<p>Congratulations on finishing this assignment! You’ve now implemented a state-of-the-art image classification system!</p>
+<h2 id="4-Test-on-your-own-image-Optional-Ungraded">4 - Test on your own image (Optional/Ungraded)</h2>
+<p>If you wish, you can also take a picture of your own hand and see the output of the model. To do this:<br>
+1. Click on “File” in the upper bar of this notebook, then click “Open” to go on your Coursera Hub.<br>
+2. Add your image to this Jupyter Notebook’s directory, in the “images” folder<br>
+3. Write your image’s name in the following code<br>
+4. Run the code and check if the algorithm is right!</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">img_path = <span class="string">&#x27;images/my_image.jpg&#x27;</span></span><br><span class="line">img = image.load_img(img_path, target_size=(<span class="number">64</span>, <span class="number">64</span>))</span><br><span class="line">x = image.img_to_array(img)</span><br><span class="line">x = np.expand_dims(x, axis=<span class="number">0</span>)</span><br><span class="line">x = preprocess_input(x)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Input image shape:&#x27;</span>, x.shape)</span><br><span class="line">my_image = scipy.misc.imread(img_path)</span><br><span class="line">imshow(my_image)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;class prediction vector [p(0), p(1), p(2), p(3), p(4), p(5)] = &quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(model.predict(x))</span><br></pre></td></tr></table></figure>
+<pre><code>Input image shape: (1, 64, 64, 3)
+
+
+class prediction vector [p(0), p(1), p(2), p(3), p(4), p(5)] =
+[[ 0.  0.  0.  0.  1.  0.]]
+</code></pre>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/output_35_3_1.png" alt="aliyun-obser"></p>
+<p>You can also print a summary of your model by running the following code.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
+<pre><code>__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 64, 64, 3)    0                                            
+__________________________________________________________________________________________________
+zero_padding2d_1 (ZeroPadding2D (None, 70, 70, 3)    0           input_1[0][0]                    
+__________________________________________________________________________________________________
+conv1 (Conv2D)                  (None, 32, 32, 64)   9472        zero_padding2d_1[0][0]           
+__________________________________________________________________________________________________
+bn_conv1 (BatchNormalization)   (None, 32, 32, 64)   256         conv1[0][0]                      
+__________________________________________________________________________________________________
+activation_4 (Activation)       (None, 32, 32, 64)   0           bn_conv1[0][0]                   
+__________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)  (None, 15, 15, 64)   0           activation_4[0][0]               
+__________________________________________________________________________________________________
+res2a_branch2a (Conv2D)         (None, 15, 15, 64)   4160        max_pooling2d_1[0][0]            
+__________________________________________________________________________________________________
+bn2a_branch2a (BatchNormalizati (None, 15, 15, 64)   256         res2a_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_5 (Activation)       (None, 15, 15, 64)   0           bn2a_branch2a[0][0]              
+__________________________________________________________________________________________________
+res2a_branch2b (Conv2D)         (None, 15, 15, 64)   36928       activation_5[0][0]               
+__________________________________________________________________________________________________
+bn2a_branch2b (BatchNormalizati (None, 15, 15, 64)   256         res2a_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_6 (Activation)       (None, 15, 15, 64)   0           bn2a_branch2b[0][0]              
+__________________________________________________________________________________________________
+res2a_branch2c (Conv2D)         (None, 15, 15, 256)  16640       activation_6[0][0]               
+__________________________________________________________________________________________________
+res2a_branch1 (Conv2D)          (None, 15, 15, 256)  16640       max_pooling2d_1[0][0]            
+__________________________________________________________________________________________________
+bn2a_branch2c (BatchNormalizati (None, 15, 15, 256)  1024        res2a_branch2c[0][0]             
+__________________________________________________________________________________________________
+bn2a_branch1 (BatchNormalizatio (None, 15, 15, 256)  1024        res2a_branch1[0][0]              
+__________________________________________________________________________________________________
+add_2 (Add)                     (None, 15, 15, 256)  0           bn2a_branch2c[0][0]              
+                                                                 bn2a_branch1[0][0]               
+__________________________________________________________________________________________________
+activation_7 (Activation)       (None, 15, 15, 256)  0           add_2[0][0]                      
+__________________________________________________________________________________________________
+res2b_branch2a (Conv2D)         (None, 15, 15, 64)   16448       activation_7[0][0]               
+__________________________________________________________________________________________________
+bn2b_branch2a (BatchNormalizati (None, 15, 15, 64)   256         res2b_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_8 (Activation)       (None, 15, 15, 64)   0           bn2b_branch2a[0][0]              
+__________________________________________________________________________________________________
+res2b_branch2b (Conv2D)         (None, 15, 15, 64)   36928       activation_8[0][0]               
+__________________________________________________________________________________________________
+bn2b_branch2b (BatchNormalizati (None, 15, 15, 64)   256         res2b_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_9 (Activation)       (None, 15, 15, 64)   0           bn2b_branch2b[0][0]              
+__________________________________________________________________________________________________
+res2b_branch2c (Conv2D)         (None, 15, 15, 256)  16640       activation_9[0][0]               
+__________________________________________________________________________________________________
+bn2b_branch2c (BatchNormalizati (None, 15, 15, 256)  1024        res2b_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_3 (Add)                     (None, 15, 15, 256)  0           bn2b_branch2c[0][0]              
+                                                                 activation_7[0][0]               
+__________________________________________________________________________________________________
+activation_10 (Activation)      (None, 15, 15, 256)  0           add_3[0][0]                      
+__________________________________________________________________________________________________
+res2c_branch2a (Conv2D)         (None, 15, 15, 64)   16448       activation_10[0][0]              
+__________________________________________________________________________________________________
+bn2c_branch2a (BatchNormalizati (None, 15, 15, 64)   256         res2c_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_11 (Activation)      (None, 15, 15, 64)   0           bn2c_branch2a[0][0]              
+__________________________________________________________________________________________________
+res2c_branch2b (Conv2D)         (None, 15, 15, 64)   36928       activation_11[0][0]              
+__________________________________________________________________________________________________
+bn2c_branch2b (BatchNormalizati (None, 15, 15, 64)   256         res2c_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_12 (Activation)      (None, 15, 15, 64)   0           bn2c_branch2b[0][0]              
+__________________________________________________________________________________________________
+res2c_branch2c (Conv2D)         (None, 15, 15, 256)  16640       activation_12[0][0]              
+__________________________________________________________________________________________________
+bn2c_branch2c (BatchNormalizati (None, 15, 15, 256)  1024        res2c_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_4 (Add)                     (None, 15, 15, 256)  0           bn2c_branch2c[0][0]              
+                                                                 activation_10[0][0]              
+__________________________________________________________________________________________________
+activation_13 (Activation)      (None, 15, 15, 256)  0           add_4[0][0]                      
+__________________________________________________________________________________________________
+res3a_branch2a (Conv2D)         (None, 8, 8, 128)    32896       activation_13[0][0]              
+__________________________________________________________________________________________________
+bn3a_branch2a (BatchNormalizati (None, 8, 8, 128)    512         res3a_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_14 (Activation)      (None, 8, 8, 128)    0           bn3a_branch2a[0][0]              
+__________________________________________________________________________________________________
+res3a_branch2b (Conv2D)         (None, 8, 8, 128)    147584      activation_14[0][0]              
+__________________________________________________________________________________________________
+bn3a_branch2b (BatchNormalizati (None, 8, 8, 128)    512         res3a_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_15 (Activation)      (None, 8, 8, 128)    0           bn3a_branch2b[0][0]              
+__________________________________________________________________________________________________
+res3a_branch2c (Conv2D)         (None, 8, 8, 512)    66048       activation_15[0][0]              
+__________________________________________________________________________________________________
+res3a_branch1 (Conv2D)          (None, 8, 8, 512)    131584      activation_13[0][0]              
+__________________________________________________________________________________________________
+bn3a_branch2c (BatchNormalizati (None, 8, 8, 512)    2048        res3a_branch2c[0][0]             
+__________________________________________________________________________________________________
+bn3a_branch1 (BatchNormalizatio (None, 8, 8, 512)    2048        res3a_branch1[0][0]              
+__________________________________________________________________________________________________
+add_5 (Add)                     (None, 8, 8, 512)    0           bn3a_branch2c[0][0]              
+                                                                 bn3a_branch1[0][0]               
+__________________________________________________________________________________________________
+activation_16 (Activation)      (None, 8, 8, 512)    0           add_5[0][0]                      
+__________________________________________________________________________________________________
+res3b_branch2a (Conv2D)         (None, 8, 8, 128)    65664       activation_16[0][0]              
+__________________________________________________________________________________________________
+bn3b_branch2a (BatchNormalizati (None, 8, 8, 128)    512         res3b_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_17 (Activation)      (None, 8, 8, 128)    0           bn3b_branch2a[0][0]              
+__________________________________________________________________________________________________
+res3b_branch2b (Conv2D)         (None, 8, 8, 128)    147584      activation_17[0][0]              
+__________________________________________________________________________________________________
+bn3b_branch2b (BatchNormalizati (None, 8, 8, 128)    512         res3b_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_18 (Activation)      (None, 8, 8, 128)    0           bn3b_branch2b[0][0]              
+__________________________________________________________________________________________________
+res3b_branch2c (Conv2D)         (None, 8, 8, 512)    66048       activation_18[0][0]              
+__________________________________________________________________________________________________
+bn3b_branch2c (BatchNormalizati (None, 8, 8, 512)    2048        res3b_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_6 (Add)                     (None, 8, 8, 512)    0           bn3b_branch2c[0][0]              
+                                                                 activation_16[0][0]              
+__________________________________________________________________________________________________
+activation_19 (Activation)      (None, 8, 8, 512)    0           add_6[0][0]                      
+__________________________________________________________________________________________________
+res3c_branch2a (Conv2D)         (None, 8, 8, 128)    65664       activation_19[0][0]              
+__________________________________________________________________________________________________
+bn3c_branch2a (BatchNormalizati (None, 8, 8, 128)    512         res3c_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_20 (Activation)      (None, 8, 8, 128)    0           bn3c_branch2a[0][0]              
+__________________________________________________________________________________________________
+res3c_branch2b (Conv2D)         (None, 8, 8, 128)    147584      activation_20[0][0]              
+__________________________________________________________________________________________________
+bn3c_branch2b (BatchNormalizati (None, 8, 8, 128)    512         res3c_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_21 (Activation)      (None, 8, 8, 128)    0           bn3c_branch2b[0][0]              
+__________________________________________________________________________________________________
+res3c_branch2c (Conv2D)         (None, 8, 8, 512)    66048       activation_21[0][0]              
+__________________________________________________________________________________________________
+bn3c_branch2c (BatchNormalizati (None, 8, 8, 512)    2048        res3c_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_7 (Add)                     (None, 8, 8, 512)    0           bn3c_branch2c[0][0]              
+                                                                 activation_19[0][0]              
+__________________________________________________________________________________________________
+activation_22 (Activation)      (None, 8, 8, 512)    0           add_7[0][0]                      
+__________________________________________________________________________________________________
+res3d_branch2a (Conv2D)         (None, 8, 8, 128)    65664       activation_22[0][0]              
+__________________________________________________________________________________________________
+bn3d_branch2a (BatchNormalizati (None, 8, 8, 128)    512         res3d_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_23 (Activation)      (None, 8, 8, 128)    0           bn3d_branch2a[0][0]              
+__________________________________________________________________________________________________
+res3d_branch2b (Conv2D)         (None, 8, 8, 128)    147584      activation_23[0][0]              
+__________________________________________________________________________________________________
+bn3d_branch2b (BatchNormalizati (None, 8, 8, 128)    512         res3d_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_24 (Activation)      (None, 8, 8, 128)    0           bn3d_branch2b[0][0]              
+__________________________________________________________________________________________________
+res3d_branch2c (Conv2D)         (None, 8, 8, 512)    66048       activation_24[0][0]              
+__________________________________________________________________________________________________
+bn3d_branch2c (BatchNormalizati (None, 8, 8, 512)    2048        res3d_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_8 (Add)                     (None, 8, 8, 512)    0           bn3d_branch2c[0][0]              
+                                                                 activation_22[0][0]              
+__________________________________________________________________________________________________
+activation_25 (Activation)      (None, 8, 8, 512)    0           add_8[0][0]                      
+__________________________________________________________________________________________________
+res4a_branch2a (Conv2D)         (None, 4, 4, 256)    131328      activation_25[0][0]              
+__________________________________________________________________________________________________
+bn4a_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4a_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_26 (Activation)      (None, 4, 4, 256)    0           bn4a_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4a_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_26[0][0]              
+__________________________________________________________________________________________________
+bn4a_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4a_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_27 (Activation)      (None, 4, 4, 256)    0           bn4a_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4a_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_27[0][0]              
+__________________________________________________________________________________________________
+res4a_branch1 (Conv2D)          (None, 4, 4, 1024)   525312      activation_25[0][0]              
+__________________________________________________________________________________________________
+bn4a_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4a_branch2c[0][0]             
+__________________________________________________________________________________________________
+bn4a_branch1 (BatchNormalizatio (None, 4, 4, 1024)   4096        res4a_branch1[0][0]              
+__________________________________________________________________________________________________
+add_9 (Add)                     (None, 4, 4, 1024)   0           bn4a_branch2c[0][0]              
+                                                                 bn4a_branch1[0][0]               
+__________________________________________________________________________________________________
+activation_28 (Activation)      (None, 4, 4, 1024)   0           add_9[0][0]                      
+__________________________________________________________________________________________________
+res4b_branch2a (Conv2D)         (None, 4, 4, 256)    262400      activation_28[0][0]              
+__________________________________________________________________________________________________
+bn4b_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4b_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_29 (Activation)      (None, 4, 4, 256)    0           bn4b_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4b_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_29[0][0]              
+__________________________________________________________________________________________________
+bn4b_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4b_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_30 (Activation)      (None, 4, 4, 256)    0           bn4b_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4b_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_30[0][0]              
+__________________________________________________________________________________________________
+bn4b_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4b_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_10 (Add)                    (None, 4, 4, 1024)   0           bn4b_branch2c[0][0]              
+                                                                 activation_28[0][0]              
+__________________________________________________________________________________________________
+activation_31 (Activation)      (None, 4, 4, 1024)   0           add_10[0][0]                     
+__________________________________________________________________________________________________
+res4c_branch2a (Conv2D)         (None, 4, 4, 256)    262400      activation_31[0][0]              
+__________________________________________________________________________________________________
+bn4c_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4c_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_32 (Activation)      (None, 4, 4, 256)    0           bn4c_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4c_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_32[0][0]              
+__________________________________________________________________________________________________
+bn4c_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4c_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_33 (Activation)      (None, 4, 4, 256)    0           bn4c_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4c_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_33[0][0]              
+__________________________________________________________________________________________________
+bn4c_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4c_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_11 (Add)                    (None, 4, 4, 1024)   0           bn4c_branch2c[0][0]              
+                                                                 activation_31[0][0]              
+__________________________________________________________________________________________________
+activation_34 (Activation)      (None, 4, 4, 1024)   0           add_11[0][0]                     
+__________________________________________________________________________________________________
+res4d_branch2a (Conv2D)         (None, 4, 4, 256)    262400      activation_34[0][0]              
+__________________________________________________________________________________________________
+bn4d_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4d_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_35 (Activation)      (None, 4, 4, 256)    0           bn4d_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4d_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_35[0][0]              
+__________________________________________________________________________________________________
+bn4d_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4d_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_36 (Activation)      (None, 4, 4, 256)    0           bn4d_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4d_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_36[0][0]              
+__________________________________________________________________________________________________
+bn4d_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4d_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_12 (Add)                    (None, 4, 4, 1024)   0           bn4d_branch2c[0][0]              
+                                                                 activation_34[0][0]              
+__________________________________________________________________________________________________
+activation_37 (Activation)      (None, 4, 4, 1024)   0           add_12[0][0]                     
+__________________________________________________________________________________________________
+res4e_branch2a (Conv2D)         (None, 4, 4, 256)    262400      activation_37[0][0]              
+__________________________________________________________________________________________________
+bn4e_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4e_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_38 (Activation)      (None, 4, 4, 256)    0           bn4e_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4e_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_38[0][0]              
+__________________________________________________________________________________________________
+bn4e_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4e_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_39 (Activation)      (None, 4, 4, 256)    0           bn4e_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4e_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_39[0][0]              
+__________________________________________________________________________________________________
+bn4e_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4e_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_13 (Add)                    (None, 4, 4, 1024)   0           bn4e_branch2c[0][0]              
+                                                                 activation_37[0][0]              
+__________________________________________________________________________________________________
+activation_40 (Activation)      (None, 4, 4, 1024)   0           add_13[0][0]                     
+__________________________________________________________________________________________________
+res4f_branch2a (Conv2D)         (None, 4, 4, 256)    262400      activation_40[0][0]              
+__________________________________________________________________________________________________
+bn4f_branch2a (BatchNormalizati (None, 4, 4, 256)    1024        res4f_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_41 (Activation)      (None, 4, 4, 256)    0           bn4f_branch2a[0][0]              
+__________________________________________________________________________________________________
+res4f_branch2b (Conv2D)         (None, 4, 4, 256)    590080      activation_41[0][0]              
+__________________________________________________________________________________________________
+bn4f_branch2b (BatchNormalizati (None, 4, 4, 256)    1024        res4f_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_42 (Activation)      (None, 4, 4, 256)    0           bn4f_branch2b[0][0]              
+__________________________________________________________________________________________________
+res4f_branch2c (Conv2D)         (None, 4, 4, 1024)   263168      activation_42[0][0]              
+__________________________________________________________________________________________________
+bn4f_branch2c (BatchNormalizati (None, 4, 4, 1024)   4096        res4f_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_14 (Add)                    (None, 4, 4, 1024)   0           bn4f_branch2c[0][0]              
+                                                                 activation_40[0][0]              
+__________________________________________________________________________________________________
+activation_43 (Activation)      (None, 4, 4, 1024)   0           add_14[0][0]                     
+__________________________________________________________________________________________________
+res5a_branch2a (Conv2D)         (None, 2, 2, 512)    524800      activation_43[0][0]              
+__________________________________________________________________________________________________
+bn5a_branch2a (BatchNormalizati (None, 2, 2, 512)    2048        res5a_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_44 (Activation)      (None, 2, 2, 512)    0           bn5a_branch2a[0][0]              
+__________________________________________________________________________________________________
+res5a_branch2b (Conv2D)         (None, 2, 2, 512)    2359808     activation_44[0][0]              
+__________________________________________________________________________________________________
+bn5a_branch2b (BatchNormalizati (None, 2, 2, 512)    2048        res5a_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_45 (Activation)      (None, 2, 2, 512)    0           bn5a_branch2b[0][0]              
+__________________________________________________________________________________________________
+res5a_branch2c (Conv2D)         (None, 2, 2, 2048)   1050624     activation_45[0][0]              
+__________________________________________________________________________________________________
+res5a_branch1 (Conv2D)          (None, 2, 2, 2048)   2099200     activation_43[0][0]              
+__________________________________________________________________________________________________
+bn5a_branch2c (BatchNormalizati (None, 2, 2, 2048)   8192        res5a_branch2c[0][0]             
+__________________________________________________________________________________________________
+bn5a_branch1 (BatchNormalizatio (None, 2, 2, 2048)   8192        res5a_branch1[0][0]              
+__________________________________________________________________________________________________
+add_15 (Add)                    (None, 2, 2, 2048)   0           bn5a_branch2c[0][0]              
+                                                                 bn5a_branch1[0][0]               
+__________________________________________________________________________________________________
+activation_46 (Activation)      (None, 2, 2, 2048)   0           add_15[0][0]                     
+__________________________________________________________________________________________________
+res5b_branch2a (Conv2D)         (None, 2, 2, 256)    524544      activation_46[0][0]              
+__________________________________________________________________________________________________
+bn5b_branch2a (BatchNormalizati (None, 2, 2, 256)    1024        res5b_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_47 (Activation)      (None, 2, 2, 256)    0           bn5b_branch2a[0][0]              
+__________________________________________________________________________________________________
+res5b_branch2b (Conv2D)         (None, 2, 2, 256)    590080      activation_47[0][0]              
+__________________________________________________________________________________________________
+bn5b_branch2b (BatchNormalizati (None, 2, 2, 256)    1024        res5b_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_48 (Activation)      (None, 2, 2, 256)    0           bn5b_branch2b[0][0]              
+__________________________________________________________________________________________________
+res5b_branch2c (Conv2D)         (None, 2, 2, 2048)   526336      activation_48[0][0]              
+__________________________________________________________________________________________________
+bn5b_branch2c (BatchNormalizati (None, 2, 2, 2048)   8192        res5b_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_16 (Add)                    (None, 2, 2, 2048)   0           bn5b_branch2c[0][0]              
+                                                                 activation_46[0][0]              
+__________________________________________________________________________________________________
+activation_49 (Activation)      (None, 2, 2, 2048)   0           add_16[0][0]                     
+__________________________________________________________________________________________________
+res5c_branch2a (Conv2D)         (None, 2, 2, 256)    524544      activation_49[0][0]              
+__________________________________________________________________________________________________
+bn5c_branch2a (BatchNormalizati (None, 2, 2, 256)    1024        res5c_branch2a[0][0]             
+__________________________________________________________________________________________________
+activation_50 (Activation)      (None, 2, 2, 256)    0           bn5c_branch2a[0][0]              
+__________________________________________________________________________________________________
+res5c_branch2b (Conv2D)         (None, 2, 2, 256)    590080      activation_50[0][0]              
+__________________________________________________________________________________________________
+bn5c_branch2b (BatchNormalizati (None, 2, 2, 256)    1024        res5c_branch2b[0][0]             
+__________________________________________________________________________________________________
+activation_51 (Activation)      (None, 2, 2, 256)    0           bn5c_branch2b[0][0]              
+__________________________________________________________________________________________________
+res5c_branch2c (Conv2D)         (None, 2, 2, 2048)   526336      activation_51[0][0]              
+__________________________________________________________________________________________________
+bn5c_branch2c (BatchNormalizati (None, 2, 2, 2048)   8192        res5c_branch2c[0][0]             
+__________________________________________________________________________________________________
+add_17 (Add)                    (None, 2, 2, 2048)   0           bn5c_branch2c[0][0]              
+                                                                 activation_49[0][0]              
+__________________________________________________________________________________________________
+activation_52 (Activation)      (None, 2, 2, 2048)   0           add_17[0][0]                     
+__________________________________________________________________________________________________
+average_pooling2d_1 (AveragePoo (None, 1, 1, 2048)   0           activation_52[0][0]              
+__________________________________________________________________________________________________
+flatten_1 (Flatten)             (None, 2048)         0           average_pooling2d_1[0][0]        
+__________________________________________________________________________________________________
+fc6 (Dense)                     (None, 6)            12294       flatten_1[0][0]                  
+==================================================================================================
+Total params: 17,958,790
+Trainable params: 17,907,718
+Non-trainable params: 51,072
+__________________________________________________________________________________________________
+</code></pre>
+<p>Finally, run the code below to visualize your ResNet50. You can also download a .png picture of your model by going to “File -&gt; Open…-&gt; model.png”.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">plot_model(model, to_file=<span class="string">&#x27;model.png&#x27;</span>)</span><br><span class="line">SVG(model_to_dot(model).create(prog=<span class="string">&#x27;dot&#x27;</span>, <span class="built_in">format</span>=<span class="string">&#x27;svg&#x27;</span>))</span><br></pre></td></tr></table></figure>
+<p><img src="https://obser.oss-cn-beijing.aliyuncs.com/Class-4-Week-2-Residual-Networks/output_39_0.svg" alt="aliyun-obser"></p>
+<p><strong>What you should remember:</strong></p>
+<ul>
+<li>Very deep “plain” networks don’t work in practice because they are hard to train due to vanishing gradients.</li>
+<li>The skip-connections help to address the Vanishing Gradient problem. They also make it easy for a ResNet block to learn an identity function.</li>
+<li>There are two main type of blocks: The identity block and the convolutional block.</li>
+<li>Very deep Residual Networks are built by stacking these blocks together.</li>
+</ul>
+<h3 id="References">References</h3>
+<p>This notebook presents the ResNet algorithm due to He et al. (2015). The implementation here also took significant inspiration and follows the structure given in the github repository of Francois Chollet:</p>
+<ul>
+<li>Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun - <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition (2015)</a></li>
+<li>Francois Chollet’s github repository: <a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py">https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Obser</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://obser.cn/posts/90f782b4.html">http://obser.cn/posts/90f782b4.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://obser.cn" target="_blank">Observer</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/python/">python</a><a class="post-meta__tags" href="/tags/machine-learning/">machine learning</a><a class="post-meta__tags" href="/tags/homework/">homework</a><a class="post-meta__tags" href="/tags/tensorflow/">tensorflow</a></div><div class="post_share"><div class="social-share" data-image="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><link rel="stylesheet" href="/css/coin.css" media="defer" onload="this.media='all'"/><div class="post-reward"><button class="tip-button reward-button"><span class="tip-button__text">感谢您的每一次充电</span><div class="coin-wrapper"><div class="coin"><div class="coin__middle"></div><div class="coin__back"></div><div class="coin__front"></div></div></div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://obser.oss-cn-beijing.aliyuncs.com/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="https://obser.oss-cn-beijing.aliyuncs.com/img/wechat.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="https://obser.oss-cn-beijing.aliyuncs.com/img/alipay.png" target="_blank"><img class="post-qr-code-img" src="https://obser.oss-cn-beijing.aliyuncs.com/img/alipay.png" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></button></div><script defer="defer" src="/js/coin.js"></script><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/f23d3116.html"><img class="prev-cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">deeplearning.ai homework：Class 4 Week 3 Autonomous driving application Car detection</div></div></a></div><div class="next-post pull-right"><a href="/posts/3d14afe5.html"><img class="next-cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">deeplearning.ai homework：Class 4 Week 2 Keras Tutorial Happy House</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/1912e9f4.html" title="deeplearning.ai homework：Class 4 Week 1 Convolution model - Application"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-12-20</div><div class="title">deeplearning.ai homework：Class 4 Week 1 Convolution model - Application</div></div></a></div><div><a href="/posts/3d14afe5.html" title="deeplearning.ai homework：Class 4 Week 2 Keras Tutorial Happy House"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-01-17</div><div class="title">deeplearning.ai homework：Class 4 Week 2 Keras Tutorial Happy House</div></div></a></div><div><a href="/posts/254dbb20.html" title="deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-01-21</div><div class="title">deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House</div></div></a></div><div><a href="/posts/79aaeb94.html" title="deeplearning.ai homework：Class 2 Week 3 TensorFlow Tutorial"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-12-15</div><div class="title">deeplearning.ai homework：Class 2 Week 3 TensorFlow Tutorial</div></div></a></div><div><a href="/posts/2f299d20.html" title="deeplearning.ai homework：Class 4 Week 1 Convolutional Neural Networks: Step by Step"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-12-20</div><div class="title">deeplearning.ai homework：Class 4 Week 1 Convolutional Neural Networks: Step by Step</div></div></a></div><div><a href="/posts/817bfeeb.html" title="deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer"><img class="cover" src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-01-21</div><div class="title">deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://obser.oss-cn-beijing.aliyuncs.com/avatar/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Obser</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Obsir" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:714893927@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">懒癌患者不定时更新的博客<div class="twopeople"><div class="twopeople"><div class="container"style="height:200px;"><canvas class="illo"width="800"height="800"style="max-width: 200px; max-height: 200px; touch-action: none; width: 640px; height: 640px;"></canvas></div><script src="https://cdn.guole.fun/js/twopeople1.js"></script><script src="https://cdn.guole.fun/js/zdog.dist.js"></script><script id="rendered-js"src="https://cdn.guole.fun/js/twopeople.js"></script><style>.twopeople{margin:0;align-items:center;justify-content:center;text-align:center}canvas{display:block;margin:0 auto;cursor:move}</style></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">Residual Networks</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-The-problem-of-very-deep-neural-networks"><span class="toc-number">1.1.</span> <span class="toc-text">1 - The problem of very deep neural networks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Building-a-Residual-Network"><span class="toc-number">1.2.</span> <span class="toc-text">2 - Building a Residual Network</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-The-identity-block"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 - The identity block</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-The-convolutional-block"><span class="toc-number">1.3.</span> <span class="toc-text">2.2 - The convolutional block</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Building-your-first-ResNet-model-50-layers"><span class="toc-number">1.4.</span> <span class="toc-text">3 - Building your first ResNet model (50 layers)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Example-of-the-trained-model-NOT-PROVIDED"><span class="toc-number">1.5.</span> <span class="toc-text">Example of the trained model (NOT PROVIDED)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Test-on-your-own-image-Optional-Ungraded"><span class="toc-number">1.6.</span> <span class="toc-text">4 - Test on your own image (Optional&#x2F;Ungraded)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#References"><span class="toc-number">1.6.1.</span> <span class="toc-text">References</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6813c069.html" title="博客图床迁移"><img src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="博客图床迁移"/></a><div class="content"><a class="title" href="/posts/6813c069.html" title="博客图床迁移">博客图床迁移</a><time datetime="2020-09-22T12:34:44.000Z" title="发表于 2020-09-22 20:34:44">2020-09-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/1cdabe3c.html" title="经典网络LeNet-5论文解读以及Tensorflow实现"><img src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="经典网络LeNet-5论文解读以及Tensorflow实现"/></a><div class="content"><a class="title" href="/posts/1cdabe3c.html" title="经典网络LeNet-5论文解读以及Tensorflow实现">经典网络LeNet-5论文解读以及Tensorflow实现</a><time datetime="2018-03-15T12:00:44.000Z" title="发表于 2018-03-15 20:00:44">2018-03-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/817bfeeb.html" title="deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer"><img src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer"/></a><div class="content"><a class="title" href="/posts/817bfeeb.html" title="deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer">deeplearning.ai homework：Class 4 Week 4 Art Generation with Neural Style Transfer</a><time datetime="2018-01-21T14:37:28.000Z" title="发表于 2018-01-21 22:37:28">2018-01-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/254dbb20.html" title="deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House"><img src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House"/></a><div class="content"><a class="title" href="/posts/254dbb20.html" title="deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House">deeplearning.ai homework：Class 4 Week 4 Face Recognition for the Happy House</a><time datetime="2018-01-21T12:56:19.000Z" title="发表于 2018-01-21 20:56:19">2018-01-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f23d3116.html" title="deeplearning.ai homework：Class 4 Week 3 Autonomous driving application Car detection"><img src="https://obser.oss-cn-beijing.aliyuncs.com/background/default-cover.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="deeplearning.ai homework：Class 4 Week 3 Autonomous driving application Car detection"/></a><div class="content"><a class="title" href="/posts/f23d3116.html" title="deeplearning.ai homework：Class 4 Week 3 Autonomous driving application Car detection">deeplearning.ai homework：Class 4 Week 3 Autonomous driving application Car detection</a><time datetime="2018-01-19T17:15:32.000Z" title="发表于 2018-01-20 01:15:32">2018-01-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2021 By Obser</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(()=>{
+  const $countDom = document.getElementById('twikoo-count')
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'hexo-3grov6ledcfb5b11',
+      region: ''
+    }, null))
+  }
+
+  const getCount = () => {
+    twikoo.getCommentsCount({
+      envId: 'hexo-3grov6ledcfb5b11',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      $countDom.innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const loadTwikoo = (bool = false) => {
+    if (typeof twikoo === 'object') {
+      init()
+      bool && $countDom && setTimeout(getCount,0)
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(()=> {
+        init()
+        bool && $countDom && setTimeout(getCount,0)
+      })
+    }
+  }
+
+  if ('Twikoo' === 'Twikoo' || !true) {
+    if (true) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo(true)
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><script>window.addEventListener('load', () => {
+  const changeContent = (content) => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g,"") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0,150) + '...'
+    }
+    return content
+  }
+
+  const getComment = () => {
+    const runTwikoo = () => {
+      twikoo.getRecentComments({
+        envId: 'hexo-3grov6ledcfb5b11',
+        region: '',
+        pageSize: 6,
+        includeReply: true
+      }).then(function (res) {
+        const twikooArray = res.map(e => {
+          return {
+            'content': changeContent(e.comment),
+            'avatar': e.avatar,
+            'nick': e.nick,
+            'url': e.url + '#' + e.id,
+            'date': new Date(e.created).toISOString()
+          }
+        })
+
+        saveToLocal.set('twikoo-newest-comments', JSON.stringify(twikooArray), 10/(60*24))
+        generateHtml(twikooArray)
+      }).catch(function (err) {
+        const $dom = document.querySelector('#card-newest-comments .aside-list')
+        $dom.innerHTML= "无法获取评论，请确认相关配置是否正确"
+      })
+    }
+
+    if (typeof twikoo === 'object') {
+      runTwikoo()
+    } else {
+      getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(runTwikoo)
+    }
+  }
+
+  const generateHtml = array => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class=\'aside-list-item\'>'
+
+        if (true) {
+          const name = 'src'
+          result += `<a href='${array[i].url}' class='thumbnail'><img ${name}='${array[i].avatar}' alt='${array[i].nick}'></a>`
+        }
+        
+        result += `<div class='content'>
+        <a class='comment' href='${array[i].url}'>${array[i].content}</a>
+        <div class='name'><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '没有评论'
+    }
+
+    let $dom = document.querySelector('#card-newest-comments .aside-list')
+    $dom.innerHTML= result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh($dom)
+  }
+
+  const newestCommentInit = () => {
+    if (document.querySelector('#card-newest-comments .aside-list')) {
+      const data = saveToLocal.get('twikoo-newest-comments')
+      if (data) {
+        generateHtml(JSON.parse(data))
+      } else {
+        getComment()
+      }
+    }
+  }
+
+  newestCommentInit()
+  document.addEventListener('pjax:complete', newestCommentInit)
+})</script><div class="aplayer no-destroy" data-id="8178941264" data-server="tencent" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-lrctype="1" data-preload="none" data-autoplay="true" muted></div><script async data-pjax src="/js/custom/floatpanel.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = [
+  'title',
+  '#config-diff',
+  '#body-wrap',
+  '#rightside-config-hide',
+  '#rightside-config-show',
+  '.js-pjax'
+]
+
+if (false) {
+  pjaxSelectors.unshift('meta[property="og:image"]', 'meta[property="og:title"]', 'meta[property="og:url"]')
+}
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.removeEventListener('scroll', window.tocScrollFn)
+  window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // Analytics
+  if (false) {
+    MtaH5.pgv()
+  }
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script data-pjax>
+  function card_artitalk_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-shuo"><div class="card-content" style="height:auto;min-height:280px;"><div class="item-headline"><i class="fas fa-comments"></i><span><a href="/artitalk/" title="artitalk page link">碎碎念</a></span><a id="cardVisual" style="cursor:pointer;float:right" onclick="cardVisual()">编辑</a></div><div id="artitalk_main" style="width:100%;height:100%;padding:1px"></div></div></div>';
+    console.log('已挂载card_artitalk');
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html);
+    (()=>{
+      const init = () => {
+        new Artitalk(Object.assign({
+          appId: 'JqtkIKyRBi1R8ASDqQFin87C-MdYXbMMI',
+          appKey: 'iTXH8JYvWM0nnDab00zUChQ3',
+        }, {"serverURL":"https://JqtkIKyR.api.lncldglobal.com","lang":"zh","pageSize":1,"color1":"#49b1f5","color2":"#00c4b6","atEmoji":{"Mafumafu1":"https://cdn.jsdelivr.net/gh/GamerNoTitle/ValineCDN@master/Mafumafu/199749454.png","Mafumafu2":"https://cdn.jsdelivr.net/gh/GamerNoTitle/ValineCDN@master/Mafumafu/199749455.png"}} ))
+      }
+      if (typeof Artitalk === 'function') {
+        init()
+      } else {
+        getScript('https://cdn.jsdelivr.net/npm/artitalk').then(init)
+      }
+    })()
+    }
+  var elist = '/artitalk/,/posts/'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    card_artitalk_injector_config();
+  }
+  else if (epage === cpage){
+    card_artitalk_injector_config();
+  }
+  </script><script async src="https://cdn.jsdelivr.net/npm/hexo-butterfly-artitalk-pro/lib/card_visual.js"></script><script data-pjax>
+  function butterfly_clock_injector_config(){
+    var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+    var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img class="entered loading" id="card-clock-loading" src="/img/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading"/></div></div></div></div></div>';
+    console.log('已挂载butterfly_clock')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_clock_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_clock_injector_config();
+  }
+  </script><script src="https://pv.sohu.com/cityjson?ie=utf-8"></script><script data-pjax src="https://cdn.jsdelivr.net/npm/hexo-butterfly-clock/lib/clock.min.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div><div id="ghbdages" style="overflow:hidden;max-height:90px;height:auto;text-align:center;margin-top:10px"><div class="swiper-wrapper"><div class="swiper-slide"><a class="github-badge" target="_blank" href="https://github.com/" style="margin-inline:5px" title="本站项目由Gtihub托管"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&amp;logo=GitHub" alt=""/></a></div></div></div><style>a.github-badge:hover:before {display:none}</style>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime.js"></script><script defer src="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://cdn.jsdelivr.net/npm/hexo-butterfly-footer-beautify/lib/swiperbdage_init_js.min.js"></script><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.1.6/js/swiper.min.js"></script><script defer data-pjax src="https://cdn.jsdelivr.net/npm/hexo-butterfly-swiper/lib/swiper_init.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '2s');
+    arr[i].setAttribute('data-wow-delay', '1s');
+    arr[i].setAttribute('data-wow-offset', '100');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://cdn.jsdelivr.net/gh/graingert/wow@1.3.0/dist/wow.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/hexo-butterfly-wowjs/lib/wow_init.min.js"></script><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --></body></html>
